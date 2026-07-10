@@ -1,9 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Diplomacy Lab - منصة التعلم التفاعلية</title>
+    <script>
+      (function() {
+        var path = window.location.pathname;
+        var base = '/diplomacy-lab';
+        if (path.startsWith(base + '/') && !path.startsWith(base + '/assets')) {
+          sessionStorage.setItem('redirect', path.replace(base, ''));
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
