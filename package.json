@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -17,7 +17,6 @@
     "clsx": "2.1.1",
     "framer-motion": "^12.42.2",
     "gh-pages": "^6.3.0",
-    "lightningcss-win32-x64-msvc": "^1.30.2",
     "lucide-react": "^1.23.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
