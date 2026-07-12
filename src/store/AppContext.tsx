@@ -1,5 +1,4 @@
 import { createContext, useContext, useReducer, ReactNode, Dispatch, useRef, useEffect } from 'react';
-import { supabase, isSupabaseReady } from '../utils/supabase';
 
 // ====== Types ======
 export interface RegisteredUser {
@@ -134,44 +133,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }, 0);
   }).current;
 
-  // Sync user profile to Supabase when it changes
-  useEffect(() => {
-    if (!isSupabaseReady() || !state.isLoggedIn || state.userRole === 'trainer' || !state.userProfile.email) return;
-    const userId = (state as any)._supabaseUserId;
-    if (!userId) return;
-    const timer = setTimeout(async () => {
-      try {
-        await supabase!.from('profiles').update({
-          full_name: state.userProfile.name,
-          xp: state.userProfile.xp,
-          level: state.userProfile.level,
-          completed_missions: state.userProfile.completedMissions,
-          scores: state.userProfile.scores,
-          badges: state.userProfile.badges,
-        }).eq('id', userId);
-      } catch {}
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [state.isLoggedIn, state.userRole, state.userProfile.name, state.userProfile.xp, state.userProfile.level, state.userProfile.completedMissions, state.userProfile.scores, state.userProfile.badges, state.userProfile.email]);
+  // Sync user profile to Supabase when it changes (DISABLED - using localStorage only)
+  // useEffect(() => {
+  //   if (!isSupabaseReady() || !state.isLoggedIn || state.userRole === 'trainer' || !state.userProfile.email) return;
+  //   const userId = (state as any)._supabaseUserId;
+  //   if (!userId) return;
+  //   const timer = setTimeout(async () => {
+  //     try {
+  //       await supabase!.from('profiles').update({
+  //         full_name: state.userProfile.name,
+  //         xp: state.userProfile.xp,
+  //         level: state.userProfile.level,
+  //         completed_missions: state.userProfile.completedMissions,
+  //         scores: state.userProfile.scores,
+  //         badges: state.userProfile.badges,
+  //       }).eq('id', userId);
+  //     } catch {}
+  //   }, 2000);
+  //   return () => clearTimeout(timer);
+  // }, [state.isLoggedIn, state.userRole, state.userProfile.name, state.userProfile.xp, state.userProfile.level, state.userProfile.completedMissions, state.userProfile.scores, state.userProfile.badges, state.userProfile.email]);
 
-  // Sync registeredUsers from Supabase on mount
-  useEffect(() => {
-    if (!isSupabaseReady()) return;
-    (async () => {
-      try {
-        const { data: profiles } = await supabase!.from('profiles').select('*').order('created_at', { ascending: false });
-        if (profiles && profiles.length > 0) {
-          rawDispatch({ type: 'SET_STATE', payload: { registeredUsers: profiles.map((p: any) => ({
-            id: p.id, name: p.full_name || p.email, email: p.email, phone: p.phone || '',
-            password: '000000', role: p.role || 'participant', country: p.country || '',
-            profession: p.profession || '', registeredAt: Date.now(), xp: p.xp || 0, level: p.level || 1,
-            completedMissions: p.completed_missions || [], scores: p.scores || {},
-            badges: p.badges || [],
-          })) } });
-        }
-      } catch {}
-    })();
-  }, []);
+  // Sync registeredUsers from Supabase on mount (DISABLED - using localStorage only)
+  // useEffect(() => {
+  //   if (!isSupabaseReady()) return;
+  //   (async () => {
+  //     try {
+  //       const { data: profiles } = await supabase!.from('profiles').select('*').order('created_at', { ascending: false });
+  //       if (profiles && profiles.length > 0) {
+  //         rawDispatch({ type: 'SET_STATE', payload: { registeredUsers: profiles.map((p: any) => ({
+  //           id: p.id, name: p.full_name || p.email, email: p.email, phone: p.phone || '',
+  //           password: '000000', role: p.role || 'participant', country: p.country || '',
+  //           profession: p.profession || '', registeredAt: Date.now(), xp: p.xp || 0, level: p.level || 1,
+  //           completedMissions: p.completed_missions || [], scores: p.scores || {},
+  //           badges: p.badges || [],
+  //         })) } });
+  //       }
+  //     } catch {}
+  //   })();
+  // }, []);
 
   if (!state) return null;
 

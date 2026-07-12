@@ -2,9 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
-export const isReady = !!supabase;
-export function isSupabaseReady() { return isReady; }
+// Disable Supabase for local development - use localStorage only
+export const supabase = null;
+export const isReady = false;
+export function isSupabaseReady() { return false; }
 
 // Admin client for creating profiles (uses the same anon key but with a flag to bypass RLS)
 // We insert profiles directly after auth signup

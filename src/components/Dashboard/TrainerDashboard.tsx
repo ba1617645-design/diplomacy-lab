@@ -26,10 +26,10 @@ export default function TrainerDashboard() {
     }
   }, []);
 
-  // قراءة المستخدمين من التخزين المنفصل كاحتياط
-  const allUsers: RegisteredUser[] = state.registeredUsers.length > 0 
-    ? state.registeredUsers 
-    : (() => { try { return JSON.parse(localStorage.getItem('dl_users') || '[]'); } catch { return []; } })();
+// قراءة المستخدمين من localStorage كاحتياط
+  const allUsers: RegisteredUser[] = state.registeredUsers.length > 0
+    ? state.registeredUsers
+    : (() => { try { const stored = JSON.parse(localStorage.getItem('dl_state') || '{}'); return stored.registeredUsers || []; } catch { return []; } })();
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [selectedUser, setSelectedUser] = useState<string>('all');
   const [showPasswords, setShowPasswords] = useState(false);
