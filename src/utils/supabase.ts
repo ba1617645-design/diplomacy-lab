@@ -2,20 +2,16 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-// Disable Supabase for local development - use localStorage only
-export const supabase = null;
-export const isReady = false;
-export function isSupabaseReady() { return false; }
+export const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+export const isReady = !!supabase;
+export function isSupabaseReady() { return isReady; }
 
-// Admin client for creating profiles (uses the same anon key but with a flag to bypass RLS)
-// We insert profiles directly after auth signup
 export async function signUp(email: string, password: string, profile: any) {
   if (!supabase) return { user: null, error: 'Supabase not configured' };
   const { data, error } = await supabase.auth.signUp({ email, password });
   if (error) throw error;
   if (!data.user) throw new Error('فشل إنشاء الحساب');
   const userId = data.user.id;
-  // Try insert with session if available, otherwise use service client
   const insertProfile = async () => {
     const { error: profileError } = await supabase.from('profiles').insert({
       id: userId, email,
@@ -28,8 +24,6 @@ export async function signUp(email: string, password: string, profile: any) {
   if (data.session) {
     await insertProfile();
   } else {
-    // No session (email confirmation enabled) - try inserting anyway
-    // If it fails, profile will be created on first login
     try { await insertProfile(); } catch {}
   }
   return { user: data.user };
